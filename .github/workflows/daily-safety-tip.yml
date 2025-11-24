@@ -2,7 +2,7 @@ name: Daily Office Safety Tip
 
 on:
   schedule:
-    - cron: '0 16 * * 1-5'  # 7:30 AM Eastern Mon–Fri (change if needed)
+    - cron: '30 16 * * 1-5'  # 7:30 AM Eastern Mon–Fri (change if needed)
   workflow_dispatch:          # Manual run button
 
 jobs:
