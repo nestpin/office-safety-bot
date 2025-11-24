@@ -9,9 +9,13 @@ SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 CHANNEL_ID      = os.getenv("CHANNEL_ID")
 TZ_NAME         = os.getenv("TZ", "America/New_York")
 
+if not SLACK_BOT_TOKEN or not CHANNEL_ID:
+    print("ERROR: Missing SLACK_BOT_TOKEN or CHANNEL_ID")
+    exit(1)   # ← this stops the run cleanly with code 1 if secrets are missing
+
 app = App(token=SLACK_BOT_TOKEN)
 
-# --------------------- ALL YOUR 300+ SAFETY TIPS -----------------------
+# --------------------- ALL YOUR TIPS (shortened here for brevity – keep all of yours) -----------------------
 tips = [
     "Adjust chair height so feet are flat on the floor and knees at 90°.",
     "Keep monitor at arm's length and top of screen at eye level.",
@@ -329,22 +333,27 @@ tips = [
     "Use fume hoods for volatile substances."
 ]
 
-# --------------------- POST TIP FUNCTION -----------------------
-tz = pytz.timezone(TZ_NAME)
-now = datetime.now(tz)
-day_name = now.strftime("%A")
-
-tip = random.choice(tips)
-
-message = (
-    f"*Good morning, team!* Happy *{day_name}*!\n\n"
-    f"Here's your *Daily Office Safety Tip*:\n\n"
-    f"> {tip}\n\n"
-    f"Stay safe and have a great day! :sunny:"
-)
-
+# --------------------- POST THE TIP -----------------------
 try:
+    tz = pytz.timezone(TZ_NAME)
+    now = datetime.now(tz)
+    day_name = now.strftime("%A")
+
+    tip = random.choice(tips)
+
+    message = (
+        f"*Good morning, team!* Happy *{day_name}*!\n\n"
+        f"Here's your *Daily Office Safety Tip*:\n\n"
+        f"> {tip}\n\n"
+        f"Stay safe and have a great day! sun:"
+    )
+
     app.client.chat_postMessage(channel=CHANNEL_ID, text=message)
-    print(f"Tip posted successfully on {day_name}!")
+    print(f"SUCCESS: Tip posted at 12:30 PM on {day_name}!")
+    print(f"Tip: {tip[:100]}{'...' if len(tip)>100 else ''}")
+
 except Exception as e:
-    print(f"Error posting tip: {e}")
+    print(f"ERROR posting to Slack: {e}")
+    raise   # ← this makes the job fail visibly in Actions (red X) if something is wrong
+
+# ← No code after this → script ends cleanly with exit code 0
